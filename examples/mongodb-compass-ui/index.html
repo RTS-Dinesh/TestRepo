@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MongoDB Compass UI Prototype</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h1>MongoDB Compass</h1>
+          <p>Local connection</p>
+        </div>
+        <div class="section-title">Databases</div>
+        <nav id="collectionTree" class="collection-tree" aria-label="Collections"></nav>
+      </aside>
+
+      <main class="workspace">
+        <header class="workspace-header">
+          <div class="breadcrumbs">
+            <span id="dbName">sample_mflix</span>
+            <span class="separator">/</span>
+            <span id="collectionName">movies</span>
+          </div>
+          <div class="workspace-tabs" role="tablist" aria-label="Compass sections">
+            <button class="tab active" data-tab="documents">Documents</button>
+            <button class="tab" data-tab="aggregations">Aggregations</button>
+            <button class="tab" data-tab="schema">Schema</button>
+            <button class="tab" data-tab="explain-plan">Explain Plan</button>
+            <button class="tab" data-tab="indexes">Indexes</button>
+          </div>
+        </header>
+
+        <section id="queryControls" class="query-bar">
+          <label>
+            Filter
+            <input
+              id="filterInput"
+              type="text"
+              spellcheck="false"
+              value="{ }"
+              aria-label="MongoDB filter JSON"
+            />
+          </label>
+          <label>
+            Projection
+            <input
+              id="projectionInput"
+              type="text"
+              spellcheck="false"
+              value="{ }"
+              aria-label="MongoDB projection JSON"
+            />
+          </label>
+          <label>
+            Sort
+            <input
+              id="sortInput"
+              type="text"
+              spellcheck="false"
+              value="{ }"
+              aria-label="MongoDB sort JSON"
+            />
+          </label>
+          <label>
+            Limit
+            <input id="limitInput" type="number" min="1" value="20" aria-label="Limit" />
+          </label>
+          <label>
+            Skip
+            <input id="skipInput" type="number" min="0" value="0" aria-label="Skip" />
+          </label>
+          <div class="query-actions">
+            <button id="findButton" class="action-btn primary">Find</button>
+            <button id="resetButton" class="action-btn">Reset</button>
+          </div>
+        </section>
+
+        <section class="content">
+          <section id="documentsView" class="documents-panel">
+            <table id="documentsTable">
+              <thead>
+                <tr>
+                  <th>_id</th>
+                  <th>Document</th>
+                </tr>
+              </thead>
+              <tbody id="documentsBody"></tbody>
+            </table>
+          </section>
+
+          <section id="placeholderView" class="placeholder hidden">
+            <h2 id="placeholderTitle">Section</h2>
+            <p>
+              This prototype focuses on the Documents experience. Use this area to wire
+              Aggregation pipelines, schema analysis, explain plans, or index management.
+            </p>
+          </section>
+
+          <aside class="details-panel">
+            <h2>Document Details</h2>
+            <pre id="documentPreview">{ }</pre>
+            <h3>Field Summary</h3>
+            <ul id="fieldSummary"></ul>
+          </aside>
+        </section>
+
+        <footer class="status-bar">
+          <span id="statusText">Ready</span>
+          <span id="resultCount">0 documents</span>
+        </footer>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
