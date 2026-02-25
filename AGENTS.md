@@ -4,18 +4,29 @@
 
 ### Repository overview
 
-This is a general-purpose "TestRepo" used to store isolated technology samples and proof-of-concept projects across separate Git branches. The `main` branch contains only a bare `README.md` — there is no unified application, build system, or service to run.
+This is a general-purpose "TestRepo" containing an Angular 21 application on the current branch along with isolated technology samples on other branches. The `main` branch contains only a bare `README.md`.
 
-### Branch structure
+### Angular application
 
-Each remote branch holds a self-contained sample (e.g., Angular comparison docs, Kafka producer/consumer samples, .NET MediatR examples). Branches are independent and do not share dependencies or build infrastructure.
+- **Framework:** Angular 21.1.5 with standalone components
+- **Testing:** Vitest 4.x (via `@angular/build:unit-test` builder)
+- **Linting:** ESLint via `@angular-eslint/schematics`
+- **Package manager:** npm (see `package-lock.json`)
 
-### Development environment
+### Key commands
 
-- **No dependencies to install:** There is no `package.json`, `requirements.txt`, `Makefile`, `docker-compose.yml`, or any other dependency manifest on `main`.
-- **No lint/test/build/run commands:** No tooling is configured on the default branch.
-- **No services required:** No databases, message brokers, or other services are needed.
+All commands run from the workspace root (`/workspace`):
 
-### Working on a specific branch
+| Task | Command |
+|------|---------|
+| Dev server | `ng serve` (port 4200) |
+| Build | `ng build` |
+| Test | `ng test --watch=false` |
+| Lint | `ng lint` |
 
-If working on a branch with actual code (e.g., an Angular or .NET sample), check out that branch and follow any setup instructions present in that branch's files. Each branch is self-contained.
+### Caveats
+
+- Angular CLI (`@angular/cli`) must be installed globally: `npm install -g @angular/cli`
+- The dev server binds to `localhost:4200` by default. Use `--host 0.0.0.0` to expose externally.
+- Production build output goes to `dist/angular-app/`.
+- No backend services, databases, or Docker containers are required.
