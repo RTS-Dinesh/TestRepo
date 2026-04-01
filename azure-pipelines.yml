@@ -1,0 +1,73 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  buildConfiguration: Release
+  dotnetSdkVersion: '8.0.x'
+  projectPath: 'MongoDbCrud.csproj'
+
+steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET SDK $(dotnetSdkVersion)'
+    inputs:
+      packageType: sdk
+      version: '$(dotnetSdkVersion)'
+
+  - task: Cache@2
+    displayName: 'Cache NuGet packages'
+    inputs:
+      key: 'nuget | "$(Agent.OS)" | **/packages.lock.json,!**/bin/**,!**/obj/**'
+      restoreKeys: |
+        nuget | "$(Agent.OS)"
+      path: '$(NUGET_PACKAGES)'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Restore'
+    inputs:
+      command: restore
+      projects: '$(projectPath)'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build'
+    inputs:
+      command: build
+      projects: '$(projectPath)'
+      arguments: '--configuration $(buildConfiguration) --no-restore'
+
+  # Skips cleanly when no test projects exist; fails normally if tests exist and fail.
+  - bash: |
+      set -euo pipefail
+      mapfile -t test_projects < <(ls -1 **/*Tests/*.csproj **/*Test/*.csproj 2>/dev/null || true)
+      if [ "${#test_projects[@]}" -eq 0 ]; then
+        echo "No test projects found; skipping dotnet test."
+        exit 0
+      fi
+      printf '%s\n' "Running tests:" "${test_projects[@]}"
+      dotnet test --configuration "$(buildConfiguration)" --no-build "${test_projects[@]}"
+    displayName: 'Test (if present)'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Publish'
+    inputs:
+      command: publish
+      publishWebProjects: false
+      projects: '$(projectPath)'
+      arguments: '--configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory)/publish'
+      zipAfterPublish: true
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish build artifacts'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'
